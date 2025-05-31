@@ -23,7 +23,7 @@ Airflow 기반의 DAG으로 구성되어 있으며, **AWS S3 → 데이터 전�
 
 ## 🧩 구성 요소
 
-* **Airflow DAG**: 전체 분석 흐름을 오케스트레이션 (`Analysis_latest.py`)
+* **Airflow DAG**: 전체 분석 흐름을 오케스트레이션 (`service_data_pipeline.py`)
 * **S3 연동**: 멤버십 CSV를 로드하여 전처리
 * **사용자 분석**: 가입, 결제, 이탈, 리텐션 지표 계산
 * **GA4 기반 분석**: 외부 쿼리(`.sql`)를 통해 주요 지표 추출
@@ -62,7 +62,7 @@ PERSONAL_AIRFLOW/
 
 실제 Airflow DAG 실행 결과:
 ![스크린샷 2025-03-19 11 13 18](https://github.com/user-attachments/assets/c362c2be-0376-4d9b-9a56-8d2d6265358d)
-
+<br/>
 Mermaid 다이어그램으로도 정리하면 다음과 같습니다:
 
 ```mermaid
@@ -78,6 +78,21 @@ graph TB
   F1 --> G1[BigQuery 적재: Weekly]
   F2 --> G2[BigQuery 적재: Monthly]
 ```
+<br/>
+### 💡 주요 태스크 요약 (task_id 기준)
+
+| Task ID                  | 설명 |
+|--------------------------|------|
+| `extract`                | S3에서 일별 회원 CSV 데이터 로드 |
+| `time_setting`           | 날짜 컬럼 정리 및 주/월 기준 컬럼 추가 |
+| `weekly_user_analysis`   | 주차 기준 유저 지표 계산 (가입/유료/이탈 등) |
+| `weekly_service_analysis`| GA4 로그 기반 WAU 분석 및 유저 데이터 병합 |
+| `monthly_user_analysis`  | 월 기준 유저 지표 계산 |
+| `monthly_service_analysis`| GA4 로그 기반 MAU 분석 및 병합 |
+| `load_weekly_report`     | 주간 분석 결과 BigQuery 테이블에 저장 |
+| `load_monthly_report`    | 월간 분석 결과 BigQuery 테이블에 저장 |
+
+
 
 ---
 
@@ -106,7 +121,7 @@ graph TB
 <br/>
 <br/>
 
-# 🎯 PERSONAL\_AIRFLOW
+# 🎯 PERSONAL_AIRFLOW
 
 > **"Automate the entire data flow and extract insights."**
 
@@ -119,7 +134,7 @@ Additionally, it incorporates GA4 logs to compute **engagement metrics (WAU/MAU)
 
 ## 🧩 Components
 
-* **Airflow DAG**: Orchestrates the entire analysis flow (`analysis_latest.py`)
+* **Airflow DAG**: Orchestrates the entire analysis flow (`service_data_pipeline.py`)
 * **S3 Integration**: Loads and preprocesses membership CSV data
 * **User Analysis**: Calculates metrics such as signups, payments, churn, retention
 * **GA4 Integration**: Runs external queries (`.sql`) to extract key engagement indicators
