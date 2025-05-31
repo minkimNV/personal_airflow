@@ -1,3 +1,14 @@
+<br/>
+<div align="center">
+  <sub>
+  본 레포지토리는 회원 데이터를 기반으로 한 <b>ETL 자동화 및 사용자 분석 파이프라인</b>을 정리한 개인 프로젝트입니다. Apache Airflow를 활용해 실무에서 반복되던 분석 업무를 자동화하고, 로그 기반 지표 분석까지 연결하는 흐름을 구현했습니다.  
+  (This repository is a personal project that outlines an automated ETL and user analytics pipeline based on membership data. It leverages Apache Airflow to streamline repetitive analytical tasks and connects the workflow with log-based metric analysis.)
+  </sub>  
+</div>
+<br/>
+<br/>
+
+---
 
 # 🎯 PERSONAL_AIRFLOW
 
@@ -12,7 +23,7 @@ Airflow 기반의 DAG으로 구성되어 있으며, **AWS S3 → 데이터 전�
 
 ## 🧩 구성 요소
 
-* **Airflow DAG**: 분석 흐름 전반을 정의 (`Analysis_latest.py`)
+* **Airflow DAG**: 전체 분석 흐름을 오케스트레이션 (`Analysis_latest.py`)
 * **S3 연동**: 멤버십 CSV를 로드하여 전처리
 * **사용자 분석**: 가입, 결제, 이탈, 리텐션 지표 계산
 * **GA4 기반 분석**: 외부 쿼리(`.sql`)를 통해 주요 지표 추출
@@ -60,8 +71,8 @@ graph TB
   C --> D2[월간 분석]
   D1 --> E1[GA4 WAU 쿼리 실행]
   D2 --> E2[GA4 MAU 쿼리 실행]
-  E1 --> F1[전환율 계산]
-  E2 --> F2[전환율 계산]
+  E1 --> F1[전환율 분석]
+  E2 --> F2[전환율 분석]
   F1 --> G1[BigQuery 적재: Weekly]
   F2 --> G2[BigQuery 적재: Monthly]
 ```
@@ -78,10 +89,13 @@ graph TB
 
 ## ✍️ 기획 의도
 
-* 반복적인 분석 과정을 자동화하고 싶다는 필요에서 출발한 개인 프로젝트입니다.
-* 데이터 전처리부터 로그 기반 분석, 전환율 계산까지 **분석-엔지니어링의 연결 흐름**을 고려해 구성했습니다.
-* 실무에서 사용해온 Apache Airflow를 활용하여, **태스크 단위로 나누고 연결하는 방식**을 정제하고자 했습니다.
-* 기존 코드와 흐름을 돌아보며, **재사용성과 확장성을 고려한 구조로 개선**하는 데 중점을 두었습니다.
+* 실무에서 반복되는 분석 업무를 더 효율적으로 다루기 위해, 개인적으로 워크플로우를 구성했습니다.
+* Apache Airflow를 활용해 분석과 엔지니어링의 경계를 연결하고, 전체 흐름을 직접 설계하고 자동화해본 경험을 정리한 프로젝트입니다.
+* 데이터 전처리부터 로그 기반 분석, 전환율 계산까지 **분석–엔지니어링 간 유기적인 흐름**을 고민하며 구성했습니다.
+* 실무에서 익숙했던 Airflow 태스크 구조를 기반으로, **작업을 모듈화하고 유연하게 연결하는 방식**을 정제했습니다.
+* 기존 코드를 돌아보며, **재사용성과 확장성**을 고려한 구조로 개선하는 데 중점을 두었습니다.
+
+
 <br/>
 <br/>
 <br/>
@@ -90,73 +104,85 @@ graph TB
 <br/>
 <br/>
 
-# 🎯 PERSONAL_AIRFLOW
+# 🎯 PERSONAL\_AIRFLOW
 
-> **"Automating the full flow of data—from raw logs to business insights."**
+> **"Automate the entire data flow and extract insights."**
 
-This project implements an automated **data pipeline and user analytics workflow** based on membership data.
-Using Apache Airflow, it processes CSV files from **AWS S3**, performs time-based transformations, computes **weekly/monthly user metrics**, and stores results in **Google BigQuery**.
+This project is a **user analysis pipeline with automated ETL**, built on top of Apache Airflow.
+It covers the full flow from **AWS S3 → data preprocessing → analysis → BigQuery loading**.
 
-In addition, it integrates GA4 log data through external SQL queries to track **WAU/MAU** and **conversion trends**.
-
----
-
-## 🧩 Key Components
-
-* **Airflow DAG**: Full pipeline orchestration (`Analysis_latest.py`)
-* **S3 Integration**: Loads raw membership CSV files
-* **User Analytics**: Tracks signup, payment, churn, and retention KPIs
-* **GA4 Insights**: Uses prewritten `.sql` queries to extract behavioral metrics
-* **BigQuery Load**: Uploads results to weekly/monthly analytics tables
+Additionally, it incorporates GA4 logs to compute **engagement metrics (WAU/MAU)** and **conversion rates**.
 
 ---
 
-## 🗂 Folder Structure
+## 🧩 Components
+
+* **Airflow DAG**: Orchestrates the entire analysis flow (`analysis_latest.py`)
+* **S3 Integration**: Loads and preprocesses membership CSV data
+* **User Analysis**: Calculates metrics such as signups, payments, churn, retention
+* **GA4 Integration**: Runs external queries (`.sql`) to extract key engagement indicators
+* **BigQuery Loading**: Stores results in weekly/monthly tables
+
+---
+
+## 🗂 Project Structure
 
 ```
 PERSONAL_AIRFLOW/
-├── dags/              # DAG definition
-├── queries/           # External SQL queries (GA4)
+├── dags/              # DAG definitions
+│   └── analysis_latest.py
+├── queries/           # External GA4 SQL queries
+│   ├── mau_query.sql
+│   └── wau_query.sql
 ├── scripts/           # Initialization scripts
-├── config/            # Connection setup (example)
-├── auth/              # Authentication (excluded)
-├── plugins/           # Custom operators (optional)
+│   └── init_airflow_connections.sh
+├── config/            # Example config files
+├── auth/              # Authentication files (excluded from repo)
+├── plugins/           # Optional custom plugins
 ├── docker-compose.yaml
 ├── Dockerfile
+├── entrypoint.sh
 ├── requirements.txt
 └── README.md
 ```
+
+> This repository includes only `dags/`, `queries/`, and `requirements.txt`.
 
 ---
 
 ## 🔁 Data Flow Diagram
 
+Actual Airflow DAG execution result:
+![Airflow DAG](https://github.com/user-attachments/assets/c362c2be-0376-4d9b-9a56-8d2d6265358d)
+
+Alternatively, a Mermaid diagram representation:
+
 ```mermaid
-graph TD
-  A[S3: Raw CSV] --> B[Extract Task]
+graph TB
+  A[S3: CSV Upload] --> B[Extract Task]
   B --> C[Datetime Preprocessing]
   C --> D1[Weekly Analysis]
   C --> D2[Monthly Analysis]
-  D1 --> E1[WAU SQL Query]
-  D2 --> E2[MAU SQL Query]
-  E1 --> F1[Join + Conversion Metrics]
-  E2 --> F2[Join + Conversion Metrics]
-  F1 --> G1[BigQuery Load: Weekly]
-  F2 --> G2[BigQuery Load: Monthly]
+  D1 --> E1[GA4 WAU Query]
+  D2 --> E2[GA4 MAU Query]
+  E1 --> F1[Conversion Analysis]
+  E2 --> F2[Conversion Analysis]
+  F1 --> G1[Load to BigQuery: Weekly]
+  F2 --> G2[Load to BigQuery: Monthly]
 ```
 
 ---
 
 ## 🛠 Tech Stack
-  
-<!--Python-->
-<img src="https://img.shields.io/badge/Python-3776AB?style=rounded&logo=Python&logoColor=white" height="25"/> <!--Apache Airflow--> <img src="https://img.shields.io/badge/Airflow-017CEE?style=rounded&logo=Apache%20Airflow&logoColor=white" height="25"/> <!--Amazon S3--> <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=rounded&logo=Amazon%20S3&logoColor=white" height="25"/> <!--Google BigQuery--> <img src="https://img.shields.io/badge/BigQuery-1A73E8?style=rounded&logo=Google%20BigQuery&logoColor=white" height="25"/> <!--Docker--> <img src="https://img.shields.io/badge/Docker-0db7ed?style=rounded&logo=Docker&logoColor=white" height="25"/> <!--SQL--> <img src="https://img.shields.io/badge/SQL-4479A1?style=rounded&logo=SQLite&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/%2B%20more-8E44AD?style=rounded&logoColor=white" height="25"/>
+
+<img src="https://img.shields.io/badge/Python-3776AB?style=rounded&logo=Python&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/Airflow-017CEE?style=rounded&logo=Apache%20Airflow&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=rounded&logo=Amazon%20S3&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/BigQuery-1A73E8?style=rounded&logo=Google%20BigQuery&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/Docker-0db7ed?style=rounded&logo=Docker&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/SQL-4479A1?style=rounded&logo=SQLite&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/%2B%20more-8E44AD?style=rounded&logoColor=white" height="25"/>
 
 ---
 
-## ✍️ Project Motivation
+## ✍️ Project Intent
 
-* This project started from a personal need to automate repetitive data analysis tasks.
-* It covers the entire flow from data preprocessing to log-based analysis and conversion rate calculation, aiming to **bridge the gap between analytics and engineering**.
-* Using Apache Airflow—previously applied in real-world tasks—I focused on organizing the process into clear, task-oriented steps.
-* Throughout the project, I aimed to **refactor the workflow with a focus on reusability and scalability**, while reflecting on and improving past implementations.
+* Designed to improve efficiency for repetitive analytics tasks frequently encountered in real-world scenarios.
+* This is a self-directed project aimed at integrating analysis and engineering through Apache Airflow.
+* Covers the full journey from preprocessing to log-based analysis and conversion rate calculation, focusing on **a cohesive data workflow**.
+* Refines task orchestration using modular and maintainable patterns familiar from actual projects.
+* Emphasizes **reusability and scalability** in structure while reflecting on and improving existing code.
