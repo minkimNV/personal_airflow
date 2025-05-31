@@ -15,9 +15,9 @@ from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 GHOST_ADMIN_API_KEY = Variable.get("GHOST_ADMIN_API_KEY")
 GHOST_API_URL = 
 GHOST_ADMIN_URL = f"{GHOST_API_URL}/ghost/api/admin"
-BUCKET_NAME = "*********-blog-raw-data"
-PROJECT_ID = ""*********"
-DATASET_ID = "gold"
+BUCKET_NAME = 
+PROJECT_ID = 
+DATASET_ID = 
 LOCATION="asia-northeast3"
 
 
