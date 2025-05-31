@@ -19,6 +19,8 @@ Airflow 기반의 DAG으로 구성되어 있으며, **AWS S3 → 데이터 전�
 
 또한 GA4 로그를 함께 활용하여, **서비스 참여도 지표(WAU/MAU)** 와 **전환율 분석**까지 연결합니다.
 
+<br/>
+
 ---
 
 ## 🧩 구성 요소
@@ -28,6 +30,8 @@ Airflow 기반의 DAG으로 구성되어 있으며, **AWS S3 → 데이터 전�
 * **사용자 분석**: 가입, 결제, 이탈, 리텐션 지표 계산
 * **GA4 기반 분석**: 외부 쿼리(`.sql`)를 통해 주요 지표 추출
 * **BigQuery 적재**: 분석 결과를 주간/월간 테이블로 저장
+
+<br/>
 
 ---
 
@@ -56,13 +60,17 @@ PERSONAL_AIRFLOW/
 
 > 해당 레포지토리에서는 `dags/`, `queries/`, `requirements.txt` 만을 포함했습니다.  
 
+<br/>
+
 ---
 
 ## 🔁 데이터 흐름 구조도
 
 실제 Airflow DAG 실행 결과:
 ![스크린샷 2025-03-19 11 13 18](https://github.com/user-attachments/assets/c362c2be-0376-4d9b-9a56-8d2d6265358d)
+
 <br/>
+
 Mermaid 다이어그램으로도 정리하면 다음과 같습니다:
 
 ```mermaid
@@ -78,7 +86,9 @@ graph TB
   F1 --> G1[BigQuery 적재: Weekly]
   F2 --> G2[BigQuery 적재: Monthly]
 ```
+
 <br/>
+
 ### 💡 주요 태스크 요약 (task_id 기준)
 
 | Task ID                  | 설명 |
@@ -93,6 +103,7 @@ graph TB
 | `load_monthly_report`    | 월간 분석 결과 BigQuery 테이블에 저장 |
 
 
+<br/>
 
 ---
 
@@ -101,6 +112,24 @@ graph TB
 <!--Python-->
 <img src="https://img.shields.io/badge/Python-3776AB?style=rounded&logo=Python&logoColor=white" height="25"/> <!--Apache Airflow--> <img src="https://img.shields.io/badge/Airflow-017CEE?style=rounded&logo=Apache%20Airflow&logoColor=white" height="25"/> <!--Amazon S3--> <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=rounded&logo=Amazon%20S3&logoColor=white" height="25"/> <!--Google BigQuery--> <img src="https://img.shields.io/badge/BigQuery-1A73E8?style=rounded&logo=Google%20BigQuery&logoColor=white" height="25"/> <!--Docker--> <img src="https://img.shields.io/badge/Docker-0db7ed?style=rounded&logo=Docker&logoColor=white" height="25"/> <!--SQL--> <img src="https://img.shields.io/badge/SQL-4479A1?style=rounded&logo=SQLite&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/%2B%20more-8E44AD?style=rounded&logoColor=white" height="25"/>
 
+<br/>
+---
+
+## 📦 추가 DAG 소개
+
+### `blog_data_pipeline.py`
+> 블로그 구독자(members)와 뉴스레터(posts) 데이터를 Ghost Admin API에서 수집하고,  
+> 주간 단위로 주요 지표(가입자 수, 활성 유저 수, 구독률, 뉴스레터 클릭/오픈율 등)를 산출합니다.  
+> - 수집된 데이터는 S3 및 BigQuery에 저장되어 추후 리포트 및 대시보드 구축에 활용됩니다.  
+> - 한국어/영어 구독자를 분리하여 분석하며, 언어별 KPI를 병렬로 계산합니다.
+
+### `blog_member_management.py`
+> Ghost 블로그 멤버 시스템을 관리하는 자동화 파이프라인입니다.  
+> - 비활성/스팸성 유저를 자동 삭제하고,  
+> - BigQuery에서 추천된 보류(pending) 유저를 Ghost에 자동 생성합니다.  
+> - Ghost 시스템과 BigQuery 테이블 간의 정합성을 주기적으로 맞추며 동기화를 수행합니다.
+
+<br/>
 
 ---
 
@@ -130,6 +159,8 @@ It covers the full flow from **AWS S3 → data preprocessing → analysis → Bi
 
 Additionally, it incorporates GA4 logs to compute **engagement metrics (WAU/MAU)** and **conversion rates**.
 
+<br/>
+
 ---
 
 ## 🧩 Components
@@ -139,6 +170,8 @@ Additionally, it incorporates GA4 logs to compute **engagement metrics (WAU/MAU)
 * **User Analysis**: Calculates metrics such as signups, payments, churn, retention
 * **GA4 Integration**: Runs external queries (`.sql`) to extract key engagement indicators
 * **BigQuery Loading**: Stores results in weekly/monthly tables
+
+<br/>
 
 ---
 
@@ -167,12 +200,16 @@ PERSONAL_AIRFLOW/
 
 > This repository includes only `dags/`, `queries/`, and `requirements.txt`.
 
+<br/>
+
 ---
 
 ## 🔁 Data Flow Diagram
 
 Actual Airflow DAG execution result:
 ![Airflow DAG](https://github.com/user-attachments/assets/c362c2be-0376-4d9b-9a56-8d2d6265358d)
+
+<br/>
 
 Alternatively, a Mermaid diagram representation:
 
@@ -190,11 +227,33 @@ graph TB
   F2 --> G2[Load to BigQuery: Monthly]
 ```
 
+<br/>
+
 ---
 
 ## 🛠 Tech Stack
 
 <img src="https://img.shields.io/badge/Python-3776AB?style=rounded&logo=Python&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/Airflow-017CEE?style=rounded&logo=Apache%20Airflow&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=rounded&logo=Amazon%20S3&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/BigQuery-1A73E8?style=rounded&logo=Google%20BigQuery&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/Docker-0db7ed?style=rounded&logo=Docker&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/SQL-4479A1?style=rounded&logo=SQLite&logoColor=white" height="25"/> <img src="https://img.shields.io/badge/%2B%20more-8E44AD?style=rounded&logoColor=white" height="25"/>
+
+<br/>
+
+---
+
+## 📦 Additional DAGs Overview
+
+### `blog_data_pipeline.py`
+> Collects blog members and newsletters data from the Ghost Admin API,  
+> and calculates key weekly metrics such as subscriber count, active users, subscription rate, and newsletter engagement KPIs (open/click/delivery rates).  
+> - Raw data is stored in both S3 and BigQuery, ready for use in dashboards or reporting pipelines.  
+> - Data is processed separately for Korean and English audiences to provide language-specific insights.
+
+### `blog_member_management.py`
+> Automates management of the Ghost blog membership system.  
+> - Inactive or low-engagement users are programmatically deleted,  
+> - While new recommended (pending) users from BigQuery are automatically created in Ghost.  
+> - Ensures data consistency between Ghost and BigQuery by running regular sync and upsert operations.
+
+<br/>
 
 ---
 
