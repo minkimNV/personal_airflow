@@ -36,7 +36,9 @@ Airflow 기반의 DAG으로 구성되어 있으며, **AWS S3 → 데이터 전�
 ```
 PERSONAL_AIRFLOW/
 ├── dags/              # DAG 정의
-│   ├── analysis_latest.py
+│   ├── blog_data_pipeline.py
+│   ├── blog_member_management.py
+│   └── service_data_pipeline.py
 ├── queries/           # 외부 SQL (GA4 쿼리)
 │   ├── mau_query.sql
 │   └── wau_query.sql
@@ -130,7 +132,9 @@ Additionally, it incorporates GA4 logs to compute **engagement metrics (WAU/MAU)
 ```
 PERSONAL_AIRFLOW/
 ├── dags/              # DAG definitions
-│   └── analysis_latest.py
+│   ├── blog_data_pipeline.py
+│   ├── blog_member_management.py
+│   └── service_data_pipeline.py
 ├── queries/           # External GA4 SQL queries
 │   ├── mau_query.sql
 │   └── wau_query.sql
