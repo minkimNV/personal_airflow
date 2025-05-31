@@ -4,7 +4,7 @@ WITH B_USER_DATA AS (
         email,
         user_id,
         event_name
-    FROM `modern-tangent-398308.deepsales_analytics.000_User_Info_Before_240901`
+    FROM `*****.*****_analytics.000_*****`
 )
 
 -- GA 로그데이터
@@ -15,7 +15,7 @@ WITH B_USER_DATA AS (
         event_name,
         page_path,
         engagement_time_sec
-    FROM `modern-tangent-398308.analytics_290195897.cleaned_events_log`
+    FROM `*****.*****_analytics.001_*****`
 )
 
 -- WAU (Weekly Active Users) -> 주별로 변경
@@ -30,19 +30,9 @@ WITH B_USER_DATA AS (
 
     SELECT
         week_start_date,
-        COUNT(DISTINCT CASE WHEN page_path NOT LIKE '%login?r=%' 
-                                AND page_path NOT LIKE '%login?page=signup%'
+        COUNT(DISTINCT CASE WHEN ...
                                 AND (
-                                    page_path LIKE '%prospecting/contacts%'
-                                    OR page_path LIKE '%prospecting/companies%'
-                                    OR page_path LIKE '%tutorial%'
-                                    OR page_path LIKE '%discover%'
-                                    OR page_path LIKE '%company/setup%'
-                                    OR page_path LIKE '%account/%'
-                                    OR page_path LIKE '%mylists%'
-                                    OR page_path LIKE '%company/019%'
-                                    OR page_path LIKE '%pricing%'
-                                    OR page_path LIKE '%payment%'
+                                    ...
                                 ) THEN user_id END) AS GA_WAU
     FROM GA_LOG_DATA
     GROUP BY week_start_date
